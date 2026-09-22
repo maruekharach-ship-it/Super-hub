@@ -1,0 +1,189 @@
+local ScreenGui = Instance.new("ScreenGui")
+local MainFrame = Instance.new("Frame")
+local Title = Instance.new("TextLabel")
+local CloseBtn = Instance.new("TextButton")
+local TimeStopBtn = Instance.new("TextButton")
+local TPWalkBtn = Instance.new("TextButton")
+local OpenUIBtn = Instance.new("TextButton")
+
+local UICorner1 = Instance.new("UICorner")
+local UICorner2 = Instance.new("UICorner")
+local UICorner3 = Instance.new("UICorner")
+local UICorner4 = Instance.new("UICorner")
+
+-- ตั้งค่า ScreenGui
+ScreenGui.Name = "CombinedGUI"
+ScreenGui.Parent = game:GetService("CoreGui") or game.Players.LocalPlayer:WaitForChild("PlayerGui")
+ScreenGui.ResetOnSpawn = false
+
+-- ปุ่มเปิด UI หน้าจอหลัก (เมื่อซ่อนอยู่)
+OpenUIBtn.Name = "OpenUIBtn"
+OpenUIBtn.Parent = ScreenGui
+OpenUIBtn.BackgroundColor3 = Color3.fromRGB(40, 40, 45)
+OpenUIBtn.Position = UDim2.new(0, 10, 0.5, -20)
+OpenUIBtn.Size = UDim2.new(0, 80, 0, 40)
+OpenUIBtn.Font = Enum.Font.SourceSansBold
+OpenUIBtn.Text = "เปิด Menu"
+OpenUIBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+OpenUIBtn.TextSize = 14.000
+OpenUIBtn.Visible = false
+
+UICorner1.CornerRadius = UDim.new(0, 8)
+UICorner1.Parent = OpenUIBtn
+
+-- ตัวเรือนหน้าต่างหลัก (Main Frame)
+MainFrame.Name = "MainFrame"
+MainFrame.Parent = ScreenGui
+MainFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 30)
+MainFrame.Position = UDim2.new(0.5, -110, 0.35, -90)
+MainFrame.Size = UDim2.new(0, 220, 0, 180)
+MainFrame.Active = true
+MainFrame.Draggable = true -- สามารถลากเคลื่อนย้ายได้
+
+UICorner2.CornerRadius = UDim.new(0, 10)
+UICorner2.Parent = MainFrame
+
+-- หัวข้อ (Title)
+Title.Name = "Title"
+Title.Parent = MainFrame
+Title.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+Title.BackgroundTransparency = 1.000
+Title.Position = UDim2.new(0, 10, 0, 5)
+Title.Size = UDim2.new(1, -50, 0, 30)
+Title.Font = Enum.Font.SourceSansBold
+Title.Text = "Control Hub"
+Title.TextColor3 = Color3.fromRGB(255, 255, 255)
+Title.TextSize = 18.000
+Title.TextXAlignment = Enum.TextXAlignment.Left
+
+-- ปุ่มปิด/ซ่อนหน้าต่าง UI (Close / Hide Button)
+CloseBtn.Name = "CloseBtn"
+CloseBtn.Parent = MainFrame
+CloseBtn.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
+CloseBtn.Position = UDim2.new(1, -30, 0, 5)
+CloseBtn.Size = UDim2.new(0, 25, 0, 25)
+CloseBtn.Font = Enum.Font.SourceSansBold
+CloseBtn.Text = "X"
+CloseBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+CloseBtn.TextSize = 14.000
+
+UICorner3.CornerRadius = UDim.new(0, 6)
+UICorner3.Parent = CloseBtn
+
+-- ปุ่มหยุดเวลา (Time Stop Button)
+TimeStopBtn.Name = "TimeStopBtn"
+TimeStopBtn.Parent = MainFrame
+TimeStopBtn.BackgroundColor3 = Color3.fromRGB(180, 40, 40)
+TimeStopBtn.Position = UDim2.new(0.08, 0, 0.28, 0)
+TimeStopBtn.Size = UDim2.new(0.84, 0, 0, 40)
+TimeStopBtn.Font = Enum.Font.SourceSansBold
+TimeStopBtn.Text = "หยุดเวลา : OFF"
+TimeStopBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+TimeStopBtn.TextSize = 15.000
+
+UICorner4.CornerRadius = UDim.new(0, 6)
+UICorner4.Parent = TimeStopBtn
+
+-- ปุ่ม TPWalk
+TPWalkBtn.Name = "TPWalkBtn"
+TPWalkBtn.Parent = MainFrame
+TPWalkBtn.BackgroundColor3 = Color3.fromRGB(180, 40, 40)
+TPWalkBtn.Position = UDim2.new(0.08, 0, 0.58, 0)
+TPWalkBtn.Size = UDim2.new(0.84, 0, 0, 40)
+TPWalkBtn.Font = Enum.Font.SourceSansBold
+TPWalkBtn.Text = "TPWalk : OFF"
+TPWalkBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+TPWalkBtn.TextSize = 15.000
+
+local UICorner5 = Instance.new("UICorner")
+UICorner5.CornerRadius = UDim.new(0, 6)
+UICorner5.Parent = TPWalkBtn
+
+---------------------------------------------------------
+-- ระบบเปิด/ปิดหน้าต่าง UI
+---------------------------------------------------------
+CloseBtn.MouseButton1Click:Connect(function()
+    MainFrame.Visible = false
+    OpenUIBtn.Visible = true
+end)
+
+OpenUIBtn.MouseButton1Click:Connect(function()
+    MainFrame.Visible = true
+    OpenUIBtn.Visible = false
+end)
+
+---------------------------------------------------------
+-- ระบบ 1: หยุดเวลา (Time Stop Logic)
+---------------------------------------------------------
+local isTimeStopped = false
+local LocalPlayer = game.Players.LocalPlayer
+
+local function toggleTimeStop()
+    isTimeStopped = not isTimeStopped
+    
+    if isTimeStopped then
+        TimeStopBtn.Text = "หยุดเวลา : ON"
+        TimeStopBtn.BackgroundColor3 = Color3.fromRGB(40, 180, 40)
+        
+        for _, obj in pairs(workspace:GetDescendants()) do
+            if obj:IsA("Humanoid") and obj.Parent ~= LocalPlayer.Character then
+                local root = obj.Parent:FindFirstChild("HumanoidRootPart")
+                if root then
+                    root.Anchored = true
+                end
+            end
+        end
+    else
+        TimeStopBtn.Text = "หยุดเวลา : OFF"
+        TimeStopBtn.BackgroundColor3 = Color3.fromRGB(180, 40, 40)
+        
+        for _, obj in pairs(workspace:GetDescendants()) do
+            if obj:IsA("Humanoid") and obj.Parent ~= LocalPlayer.Character then
+                local root = obj.Parent:FindFirstChild("HumanoidRootPart")
+                if root then
+                    root.Anchored = false
+                end
+            end
+        end
+    end
+end
+
+TimeStopBtn.MouseButton1Click:Connect(toggleTimeStop)
+
+---------------------------------------------------------
+-- ระบบ 2: TPWalk (Teleport Walk)
+---------------------------------------------------------
+local tpWalkEnabled = false
+local tpWalkSpeed = 2.5 -- สามารถปรับความเร็วได้ที่นี่
+local RunService = game:GetService("RunService")
+local tpWalkConnection = nil
+
+local function toggleTPWalk()
+    tpWalkEnabled = not tpWalkEnabled
+    
+    if tpWalkEnabled then
+        TPWalkBtn.Text = "TPWalk : ON"
+        TPWalkBtn.BackgroundColor3 = Color3.fromRGB(40, 180, 40)
+        
+        tpWalkConnection = RunService.Heartbeat:Connect(function()
+            local char = LocalPlayer.Character
+            if char and char:FindFirstChild("HumanoidRootPart") and char:FindFirstChild("Humanoid") then
+                local hum = char.Humanoid
+                local hrp = char.HumanoidRootPart
+                if hum.MoveDirection.Magnitude > 0 then
+                    hrp.CFrame = hrp.CFrame + (hum.MoveDirection * tpWalkSpeed)
+                end
+            end
+        end)
+    else
+        TPWalkBtn.Text = "TPWalk : OFF"
+        TPWalkBtn.BackgroundColor3 = Color3.fromRGB(180, 40, 40)
+        
+        if tpWalkConnection then
+            tpWalkConnection:Disconnect()
+            tpWalkConnection = nil
+        end
+    end
+end
+
+TPWalkBtn.MouseButton1Click:Connect(toggleTPWalk)
